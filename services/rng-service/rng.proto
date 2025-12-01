@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package rng;
+
+// ?? THIS LINE FIXES YOUR ERROR
+option go_package = "ECHOBETZ/services/rng-service;rng";
+
+service RNG {
+  rpc GetRandomNumbers (RNGRequest) returns (RNGResponse);
+}
+
+message RNGRequest {
+  int32 count = 1; // Number of random integers requested
+}
+
+message RNGResponse {
+  repeated int64 numbers = 1; // The sequence of random numbers (stop indices)
+  string seed = 2; // The current seed used for audibility
+}

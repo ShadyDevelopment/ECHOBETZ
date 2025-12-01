@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package engine;
+
+// ?? THIS LINE FIXES YOUR ERROR
+option go_package = "ECHOBETZ/services/game-engine-service;engine";
+
+service GameEngine {
+  rpc Spin (SpinRequest) returns (SpinResponse);
+}
+
+message SpinRequest {
+  string game_code = 1;
+  int64 bet_amount = 2;
+  // sessionId is handled by the Gateway, only core logic data here
+}
+
+message SpinResponse {
+  repeated string matrix = 1; // Flattened symbol matrix (e.g., 5x3 = 15 strings)
+  int64 total_win = 2;
+  repeated string win_details = 3; // Simplified win line list
+  string rng_seed = 4; // The seed used for verifiable fair play
+}
