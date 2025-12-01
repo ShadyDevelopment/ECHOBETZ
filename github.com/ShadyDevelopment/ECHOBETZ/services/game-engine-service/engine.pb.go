@@ -4,7 +4,7 @@
 // 	protoc        v3.21.12
 // source: services/game-engine-service/engine.proto
 
-package main
+package engine
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"

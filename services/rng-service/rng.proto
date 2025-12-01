@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package rng; 
 
-// FIX: Change the Go package suffix to 'main'
+// FIX: This line tells the Go compiler to use "package main" 
+// in the generated 'rng.pb.go' file, resolving the conflict 
+// with 'main.go' in the same directory.
 option go_package = "github.com/ShadyDevelopment/ECHOBETZ/services/rng-service;main";
 
 service RNGService {
@@ -10,12 +12,17 @@ service RNGService {
 }
 
 message RNGRequest {
+    // The number of random integers required (e.g., 5 for 5 reels)
     int32 count = 1;
+    // The minimum value (inclusive, usually 0)
     int32 min = 2;
+    // The maximum value (exclusive, usually reel strip length)
     int32 max = 3;
 }
 
 message RNGResponse {
+    // The sequence of random integers generated
     repeated int32 numbers = 1;
-    int64 seed = 2; // Return the seed used for auditing
+    // The initial seed used, essential for auditable results (Verifiable Random Function)
+    int64 seed = 2; 
 }

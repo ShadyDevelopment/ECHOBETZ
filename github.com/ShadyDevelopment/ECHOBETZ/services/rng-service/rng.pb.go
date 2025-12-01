@@ -22,8 +22,13 @@ const (
 )
 
 type RNGRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         int32                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"` // Number of random integers requested
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The number of random integers required (e.g., 5 for 5 reels)
+	Count int32 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	// The minimum value (inclusive, usually 0)
+	Min int32 `protobuf:"varint,2,opt,name=min,proto3" json:"min,omitempty"`
+	// The maximum value (exclusive, usually reel strip length)
+	Max           int32 `protobuf:"varint,3,opt,name=max,proto3" json:"max,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -65,10 +70,26 @@ func (x *RNGRequest) GetCount() int32 {
 	return 0
 }
 
+func (x *RNGRequest) GetMin() int32 {
+	if x != nil {
+		return x.Min
+	}
+	return 0
+}
+
+func (x *RNGRequest) GetMax() int32 {
+	if x != nil {
+		return x.Max
+	}
+	return 0
+}
+
 type RNGResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Numbers       []int64                `protobuf:"varint,1,rep,packed,name=numbers,proto3" json:"numbers,omitempty"` // The sequence of random numbers (stop indices)
-	Seed          string                 `protobuf:"bytes,2,opt,name=seed,proto3" json:"seed,omitempty"`               // The current seed used for audibility
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The sequence of random integers generated
+	Numbers []int32 `protobuf:"varint,1,rep,packed,name=numbers,proto3" json:"numbers,omitempty"`
+	// The initial seed used, essential for auditable results (Verifiable Random Function)
+	Seed          int64 `protobuf:"varint,2,opt,name=seed,proto3" json:"seed,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -103,33 +124,37 @@ func (*RNGResponse) Descriptor() ([]byte, []int) {
 	return file_services_rng_service_rng_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *RNGResponse) GetNumbers() []int64 {
+func (x *RNGResponse) GetNumbers() []int32 {
 	if x != nil {
 		return x.Numbers
 	}
 	return nil
 }
 
-func (x *RNGResponse) GetSeed() string {
+func (x *RNGResponse) GetSeed() int64 {
 	if x != nil {
 		return x.Seed
 	}
-	return ""
+	return 0
 }
 
 var File_services_rng_service_rng_proto protoreflect.FileDescriptor
 
 const file_services_rng_service_rng_proto_rawDesc = "" +
 	"\n" +
-	"\x1eservices/rng-service/rng.proto\x12\x03rng\"\"\n" +
+	"\x1eservices/rng-service/rng.proto\x12\x03rng\"F\n" +
 	"\n" +
 	"RNGRequest\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x05R\x05count\";\n" +
+	"\x05count\x18\x01 \x01(\x05R\x05count\x12\x10\n" +
+	"\x03min\x18\x02 \x01(\x05R\x03min\x12\x10\n" +
+	"\x03max\x18\x03 \x01(\x05R\x03max\";\n" +
 	"\vRNGResponse\x12\x18\n" +
-	"\anumbers\x18\x01 \x03(\x03R\anumbers\x12\x12\n" +
-	"\x04seed\x18\x02 \x01(\tR\x04seed2<\n" +
-	"\x03RNG\x125\n" +
-	"\x10GetRandomNumbers\x12\x0f.rng.RNGRequest\x1a\x10.rng.RNGResponseB@Z>github.com/ShadyDevelopment/ECHOBETZ/services/rng-service;mainb\x06proto3"
+	"\anumbers\x18\x01 \x03(\x05R\anumbers\x12\x12\n" +
+	"\x04seed\x18\x02 \x01(\x03R\x04seed2?\n" +
+	"\n" +
+	"RNGService\x121\n" +
+	"\n" +
+	"GetNumbers\x12\x0f.rng.RNGRequest\x1a\x10.rng.RNGResponse\"\x00B@Z>github.com/ShadyDevelopment/ECHOBETZ/services/rng-service;mainb\x06proto3"
 
 var (
 	file_services_rng_service_rng_proto_rawDescOnce sync.Once
@@ -149,8 +174,8 @@ var file_services_rng_service_rng_proto_goTypes = []any{
 	(*RNGResponse)(nil), // 1: rng.RNGResponse
 }
 var file_services_rng_service_rng_proto_depIdxs = []int32{
-	0, // 0: rng.RNG.GetRandomNumbers:input_type -> rng.RNGRequest
-	1, // 1: rng.RNG.GetRandomNumbers:output_type -> rng.RNGResponse
+	0, // 0: rng.RNGService.GetNumbers:input_type -> rng.RNGRequest
+	1, // 1: rng.RNGService.GetNumbers:output_type -> rng.RNGResponse
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

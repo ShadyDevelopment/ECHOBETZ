@@ -4,7 +4,7 @@
 // 	protoc        v3.21.12
 // source: services/rng-service/rng.proto
 
-package rng
+package main
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"

@@ -1,56 +1,64 @@
 package main
 
 import (
-    "context"
-    "crypto/sha256"
-    "fmt"
-    "log"
-    "math/rand/v2"
-    "net"
-    "strconv"
-    "time"
-    "google.golang.org/grpc"
-    pb "github.com/ShadyDevelopment/ECHOBETZ/services/rng-service"
+	"context"
+	"log"
+	"math/rand"
+	"net"
+	"os"
+	"time"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
-const (
-    port = ":50051"
-)
-
-type server struct {
-    pb.UnimplementedRNGServer
+// rngServer implements the RNGServiceServer interface defined in rng_grpc.pb.go.
+type rngServer struct {
+	// Must be embedded to satisfy the interface.
+	UnimplementedRNGServiceServer
 }
 
-// GetRandomNumbers implements rng.RNGServer
-func (s *server) GetRandomNumbers(ctx context.Context, in *pb.RNGRequest) (*pb.RNGResponse, error) {
-    // 1. Generate a cryptographically secure seed
-    seed := time.Now().UnixNano()
-    // In a real system, we'd use crypto/rand for better seeding
-    source := rand.NewPCG(uint64(seed), rand.NewSource(seed).Split().S)
+// GetRandomInts generates a list of random 64-bit integers.
+func (s *rngServer) GetRandomInts(ctx context.Context, req *RNGRequest) (*RNGResponse, error) {
+	// Initialize a new pseudo-random source based on the current time
+	// Note: We are using the newer math/rand/v2 which is imported implicitly 
+	// or the older rand.NewSource if running Go < 1.20
+	source := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-    randomNumbers := make([]int64, in.Count)
-    for i := 0; i < int(in.Count); i++ {
-        // Generate a large positive 64-bit random number
-        randomNumbers[i] = source.Uint64() 
-    }
+	count := int(req.GetCount())
+	if count <= 0 || count > 1000 {
+		count = 1 // Default to 1 if count is invalid
+	}
 
-    log.Printf("RNG Call: Count=%d, Seed=%d, Output (first 3)=%v", in.Count, seed, randomNumbers[:3])
+	ints := make([]int64, count)
+	for i := 0; i < count; i++ {
+		// Generate a random int64
+		ints[i] = source.Int63()
+	}
 
-    return &pb.RNGResponse{
-        Numbers: randomNumbers,
-        Seed:    fmt.Sprintf("%d", seed), // Convert seed to string for transmission
-    }, nil
+	return &RNGResponse{Ints: ints}, nil
 }
 
 func main() {
-    lis, err := net.Listen("tcp", port)
-    if err != nil {
-        log.Fatalf("failed to listen: %v", err)
-    }
-    s := grpc.NewServer()
-    pb.RegisterRNGServer(s, &server{})
-    log.Printf("RNG server listening at %v", lis.Addr())
-    if err := s.Serve(lis); err != nil {
-        log.Fatalf("failed to serve: %v", err)
-    }
+	port := os.Getenv("RNG_PORT")
+	if port == "" {
+		port = "50051" // Default port for RNG service
+	}
+
+	lis, err := net.Listen("tcp", ":"+port)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	s := grpc.NewServer()
+	// Register the service using the now-unprefixed Register function
+	RegisterRNGServiceServer(s, &rngServer{})
+
+	// Register reflection service on gRPC server for testing tools
+	reflection.Register(s)
+
+	log.Printf("RNG Service listening on %v", lis.Addr())
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
 }

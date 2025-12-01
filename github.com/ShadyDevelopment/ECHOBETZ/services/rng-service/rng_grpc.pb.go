@@ -19,101 +19,101 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	RNG_GetRandomNumbers_FullMethodName = "/rng.RNG/GetRandomNumbers"
+	RNGService_GetNumbers_FullMethodName = "/rng.RNGService/GetNumbers"
 )
 
-// RNGClient is the client API for RNG service.
+// RNGServiceClient is the client API for RNGService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type RNGClient interface {
-	GetRandomNumbers(ctx context.Context, in *RNGRequest, opts ...grpc.CallOption) (*RNGResponse, error)
+type RNGServiceClient interface {
+	GetNumbers(ctx context.Context, in *RNGRequest, opts ...grpc.CallOption) (*RNGResponse, error)
 }
 
-type rNGClient struct {
+type rNGServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewRNGClient(cc grpc.ClientConnInterface) RNGClient {
-	return &rNGClient{cc}
+func NewRNGServiceClient(cc grpc.ClientConnInterface) RNGServiceClient {
+	return &rNGServiceClient{cc}
 }
 
-func (c *rNGClient) GetRandomNumbers(ctx context.Context, in *RNGRequest, opts ...grpc.CallOption) (*RNGResponse, error) {
+func (c *rNGServiceClient) GetNumbers(ctx context.Context, in *RNGRequest, opts ...grpc.CallOption) (*RNGResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RNGResponse)
-	err := c.cc.Invoke(ctx, RNG_GetRandomNumbers_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, RNGService_GetNumbers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// RNGServer is the server API for RNG service.
-// All implementations must embed UnimplementedRNGServer
+// RNGServiceServer is the server API for RNGService service.
+// All implementations must embed UnimplementedRNGServiceServer
 // for forward compatibility.
-type RNGServer interface {
-	GetRandomNumbers(context.Context, *RNGRequest) (*RNGResponse, error)
-	mustEmbedUnimplementedRNGServer()
+type RNGServiceServer interface {
+	GetNumbers(context.Context, *RNGRequest) (*RNGResponse, error)
+	mustEmbedUnimplementedRNGServiceServer()
 }
 
-// UnimplementedRNGServer must be embedded to have
+// UnimplementedRNGServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedRNGServer struct{}
+type UnimplementedRNGServiceServer struct{}
 
-func (UnimplementedRNGServer) GetRandomNumbers(context.Context, *RNGRequest) (*RNGResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetRandomNumbers not implemented")
+func (UnimplementedRNGServiceServer) GetNumbers(context.Context, *RNGRequest) (*RNGResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetNumbers not implemented")
 }
-func (UnimplementedRNGServer) mustEmbedUnimplementedRNGServer() {}
-func (UnimplementedRNGServer) testEmbeddedByValue()             {}
+func (UnimplementedRNGServiceServer) mustEmbedUnimplementedRNGServiceServer() {}
+func (UnimplementedRNGServiceServer) testEmbeddedByValue()                    {}
 
-// UnsafeRNGServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to RNGServer will
+// UnsafeRNGServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RNGServiceServer will
 // result in compilation errors.
-type UnsafeRNGServer interface {
-	mustEmbedUnimplementedRNGServer()
+type UnsafeRNGServiceServer interface {
+	mustEmbedUnimplementedRNGServiceServer()
 }
 
-func RegisterRNGServer(s grpc.ServiceRegistrar, srv RNGServer) {
-	// If the following call panics, it indicates UnimplementedRNGServer was
+func RegisterRNGServiceServer(s grpc.ServiceRegistrar, srv RNGServiceServer) {
+	// If the following call panics, it indicates UnimplementedRNGServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&RNG_ServiceDesc, srv)
+	s.RegisterService(&RNGService_ServiceDesc, srv)
 }
 
-func _RNG_GetRandomNumbers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RNGService_GetNumbers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RNGRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RNGServer).GetRandomNumbers(ctx, in)
+		return srv.(RNGServiceServer).GetNumbers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RNG_GetRandomNumbers_FullMethodName,
+		FullMethod: RNGService_GetNumbers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RNGServer).GetRandomNumbers(ctx, req.(*RNGRequest))
+		return srv.(RNGServiceServer).GetNumbers(ctx, req.(*RNGRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// RNG_ServiceDesc is the grpc.ServiceDesc for RNG service.
+// RNGService_ServiceDesc is the grpc.ServiceDesc for RNGService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var RNG_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "rng.RNG",
-	HandlerType: (*RNGServer)(nil),
+var RNGService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "rng.RNGService",
+	HandlerType: (*RNGServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetRandomNumbers",
-			Handler:    _RNG_GetRandomNumbers_Handler,
+			MethodName: "GetNumbers",
+			Handler:    _RNGService_GetNumbers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
