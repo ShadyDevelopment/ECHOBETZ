@@ -3,7 +3,8 @@ syntax = "proto3";
 package engine;
 
 // ?? THIS LINE FIXES YOUR ERROR
-option go_package = "ECHOBETZ/services/game-engine-service;engine";
+option go_package = "github.com/ShadyDevelopment/ECHOBETZ/services/game-engine-service;engine";
+
 
 service GameEngine {
   rpc Spin (SpinRequest) returns (SpinResponse);

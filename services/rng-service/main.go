@@ -9,9 +9,8 @@ import (
     "net"
     "strconv"
     "time"
-
     "google.golang.org/grpc"
-    pb "path/to/rng/rng" // Assume generated Go code path
+    pb "github.com/ShadyDevelopment/ECHOBETZ/services/rng-service"
 )
 
 const (

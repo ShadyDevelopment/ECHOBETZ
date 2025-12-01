@@ -3,7 +3,8 @@ syntax = "proto3";
 package rng;
 
 // ?? THIS LINE FIXES YOUR ERROR
-option go_package = "ECHOBETZ/services/rng-service;rng";
+option go_package = "github.com/ShadyDevelopment/ECHOBETZ/services/rng-service;main";
+
 
 service RNG {
   rpc GetRandomNumbers (RNGRequest) returns (RNGResponse);

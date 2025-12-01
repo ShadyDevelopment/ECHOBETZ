@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Database and Cache
   redis:
@@ -9,28 +7,34 @@ services:
 
   # Core ECHOBETZ Services (Go/gRPC)
   rng-service:
-    build: ./services/rng-service
+    build:
+      context: .
+      # PATH: services/rng-service/Dockerfile
+      dockerfile: services/rng-service/Dockerfile
     ports:
       - "50051:50051"
     # Placeholder: Assuming you have a Dockerfile for the Go service
 
   game-engine-service:
-    build: ./services/game-engine-service
+    build:
+      context: .
+      # PATH: services/game-engine-service/Dockerfile
+      dockerfile: services/game-engine-service/Dockerfile
     ports:
       - "50052:50052"
     depends_on:
       - rng-service
-    # Mount config for development
     volumes:
-      - ./config:/app/config 
+      - ./config:/app/config
 
   # External-facing services (Node.js/TypeScript)
   integration-gateway:
-    build: 
-      context: ./services/integration-gateway
-      target: dev
+    build:
+      context: .
+      # PATH: services/integration-gateway/Dockerfile
+      dockerfile: services/integration-gateway/Dockerfile
     ports:
-      - "8080:8080" # REST & WebSocket
+      - "8080:8080"
     environment:
       - RNG_SERVER_ADDR=rng-service:50051
       - GES_SERVER_ADDR=game-engine-service:50052
@@ -40,7 +44,10 @@ services:
       - test-casino
       
   test-casino:
-    build: ./test-casino
+    build:
+      context: .
+      # PATH: test-casino/Dockerfile
+      dockerfile: test-casino/Dockerfile
     ports:
-      - "3000:3000" # Casino Wallet API
+      - "3000:3000"
     # Placeholder: Assuming you have a Dockerfile for the Casino service
