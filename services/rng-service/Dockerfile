@@ -1,17 +1,23 @@
 FROM golang:alpine AS builder
 WORKDIR /app
 
-# 1. Copy root module definition (go.mod, go.sum)
+# 1. CRITICAL FIX: Install git to allow 'go mod tidy' to validate local replacements
+RUN apk update && apk add --no-cache git
+
+# 2. Copy root module definition
 COPY go.mod go.sum ./
 RUN go mod download
 
-# 2. Copy the ENTIRE 'services' directory structure.
-# This ensures that relative packages (like /services/rng-service/proto) 
-# are available locally within the module.
+# 3. Copy the entire services directory structure.
 COPY services/ ./services/
 
-# 3. Build the RNG service
-# The 'go build' command should now correctly find the local proto package.
+# 4. Add explicit local replace directive
+RUN go mod edit -replace=github.com/ShadyDevelopment/ECHOBETZ/services/rng-service/proto=./services/rng-service/proto
+
+# 5. Run tidy to force Go to process the new replace directive
+RUN go mod tidy
+
+# 6. Build the RNG service
 RUN CGO_ENABLED=0 go build -o /usr/local/bin/rng-service ./services/rng-service/
 
 FROM alpine:latest
