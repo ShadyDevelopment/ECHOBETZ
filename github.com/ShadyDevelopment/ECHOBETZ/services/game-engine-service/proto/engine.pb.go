@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.10
 // 	protoc        v3.21.12
-// source: services/game-engine-service/engine.proto
+// source: services/game-engine-service/proto/engine.proto
 
-package main
+package engine
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -24,14 +24,14 @@ const (
 type SpinRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	GameCode      string                 `protobuf:"bytes,1,opt,name=game_code,json=gameCode,proto3" json:"game_code,omitempty"`
-	BetAmount     int64                  `protobuf:"varint,2,opt,name=bet_amount,json=betAmount,proto3" json:"bet_amount,omitempty"` // sessionId is handled by the Gateway, only core logic data here
+	BetAmount     int64                  `protobuf:"varint,2,opt,name=bet_amount,json=betAmount,proto3" json:"bet_amount,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SpinRequest) Reset() {
 	*x = SpinRequest{}
-	mi := &file_services_game_engine_service_engine_proto_msgTypes[0]
+	mi := &file_services_game_engine_service_proto_engine_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +43,7 @@ func (x *SpinRequest) String() string {
 func (*SpinRequest) ProtoMessage() {}
 
 func (x *SpinRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_services_game_engine_service_engine_proto_msgTypes[0]
+	mi := &file_services_game_engine_service_proto_engine_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +56,7 @@ func (x *SpinRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SpinRequest.ProtoReflect.Descriptor instead.
 func (*SpinRequest) Descriptor() ([]byte, []int) {
-	return file_services_game_engine_service_engine_proto_rawDescGZIP(), []int{0}
+	return file_services_game_engine_service_proto_engine_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *SpinRequest) GetGameCode() string {
@@ -75,17 +75,17 @@ func (x *SpinRequest) GetBetAmount() int64 {
 
 type SpinResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Matrix        []string               `protobuf:"bytes,1,rep,name=matrix,proto3" json:"matrix,omitempty"` // Flattened symbol matrix (e.g., 5x3 = 15 strings)
+	Matrix        []string               `protobuf:"bytes,1,rep,name=matrix,proto3" json:"matrix,omitempty"`
 	TotalWin      int64                  `protobuf:"varint,2,opt,name=total_win,json=totalWin,proto3" json:"total_win,omitempty"`
-	WinDetails    []string               `protobuf:"bytes,3,rep,name=win_details,json=winDetails,proto3" json:"win_details,omitempty"` // Simplified win line list
-	RngSeed       string                 `protobuf:"bytes,4,opt,name=rng_seed,json=rngSeed,proto3" json:"rng_seed,omitempty"`          // The seed used for verifiable fair play
+	WinDetails    []string               `protobuf:"bytes,3,rep,name=win_details,json=winDetails,proto3" json:"win_details,omitempty"`
+	RngSeed       string                 `protobuf:"bytes,4,opt,name=rng_seed,json=rngSeed,proto3" json:"rng_seed,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SpinResponse) Reset() {
 	*x = SpinResponse{}
-	mi := &file_services_game_engine_service_engine_proto_msgTypes[1]
+	mi := &file_services_game_engine_service_proto_engine_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -97,7 +97,7 @@ func (x *SpinResponse) String() string {
 func (*SpinResponse) ProtoMessage() {}
 
 func (x *SpinResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_services_game_engine_service_engine_proto_msgTypes[1]
+	mi := &file_services_game_engine_service_proto_engine_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -110,7 +110,7 @@ func (x *SpinResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SpinResponse.ProtoReflect.Descriptor instead.
 func (*SpinResponse) Descriptor() ([]byte, []int) {
-	return file_services_game_engine_service_engine_proto_rawDescGZIP(), []int{1}
+	return file_services_game_engine_service_proto_engine_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *SpinResponse) GetMatrix() []string {
@@ -141,11 +141,11 @@ func (x *SpinResponse) GetRngSeed() string {
 	return ""
 }
 
-var File_services_game_engine_service_engine_proto protoreflect.FileDescriptor
+var File_services_game_engine_service_proto_engine_proto protoreflect.FileDescriptor
 
-const file_services_game_engine_service_engine_proto_rawDesc = "" +
+const file_services_game_engine_service_proto_engine_proto_rawDesc = "" +
 	"\n" +
-	")services/game-engine-service/engine.proto\x12\x06engine\"I\n" +
+	"/services/game-engine-service/proto/engine.proto\x12\x06engine\"I\n" +
 	"\vSpinRequest\x12\x1b\n" +
 	"\tgame_code\x18\x01 \x01(\tR\bgameCode\x12\x1d\n" +
 	"\n" +
@@ -158,26 +158,26 @@ const file_services_game_engine_service_engine_proto_rawDesc = "" +
 	"\brng_seed\x18\x04 \x01(\tR\arngSeed2?\n" +
 	"\n" +
 	"GameEngine\x121\n" +
-	"\x04Spin\x12\x13.engine.SpinRequest\x1a\x14.engine.SpinResponseBJZHgithub.com/ShadyDevelopment/ECHOBETZ/services/game-engine-service;engineb\x06proto3"
+	"\x04Spin\x12\x13.engine.SpinRequest\x1a\x14.engine.SpinResponseBPZNgithub.com/ShadyDevelopment/ECHOBETZ/services/game-engine-service/proto;engineb\x06proto3"
 
 var (
-	file_services_game_engine_service_engine_proto_rawDescOnce sync.Once
-	file_services_game_engine_service_engine_proto_rawDescData []byte
+	file_services_game_engine_service_proto_engine_proto_rawDescOnce sync.Once
+	file_services_game_engine_service_proto_engine_proto_rawDescData []byte
 )
 
-func file_services_game_engine_service_engine_proto_rawDescGZIP() []byte {
-	file_services_game_engine_service_engine_proto_rawDescOnce.Do(func() {
-		file_services_game_engine_service_engine_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_services_game_engine_service_engine_proto_rawDesc), len(file_services_game_engine_service_engine_proto_rawDesc)))
+func file_services_game_engine_service_proto_engine_proto_rawDescGZIP() []byte {
+	file_services_game_engine_service_proto_engine_proto_rawDescOnce.Do(func() {
+		file_services_game_engine_service_proto_engine_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_services_game_engine_service_proto_engine_proto_rawDesc), len(file_services_game_engine_service_proto_engine_proto_rawDesc)))
 	})
-	return file_services_game_engine_service_engine_proto_rawDescData
+	return file_services_game_engine_service_proto_engine_proto_rawDescData
 }
 
-var file_services_game_engine_service_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_services_game_engine_service_engine_proto_goTypes = []any{
+var file_services_game_engine_service_proto_engine_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_services_game_engine_service_proto_engine_proto_goTypes = []any{
 	(*SpinRequest)(nil),  // 0: engine.SpinRequest
 	(*SpinResponse)(nil), // 1: engine.SpinResponse
 }
-var file_services_game_engine_service_engine_proto_depIdxs = []int32{
+var file_services_game_engine_service_proto_engine_proto_depIdxs = []int32{
 	0, // 0: engine.GameEngine.Spin:input_type -> engine.SpinRequest
 	1, // 1: engine.GameEngine.Spin:output_type -> engine.SpinResponse
 	1, // [1:2] is the sub-list for method output_type
@@ -187,26 +187,26 @@ var file_services_game_engine_service_engine_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_services_game_engine_service_engine_proto_init() }
-func file_services_game_engine_service_engine_proto_init() {
-	if File_services_game_engine_service_engine_proto != nil {
+func init() { file_services_game_engine_service_proto_engine_proto_init() }
+func file_services_game_engine_service_proto_engine_proto_init() {
+	if File_services_game_engine_service_proto_engine_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_services_game_engine_service_engine_proto_rawDesc), len(file_services_game_engine_service_engine_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_services_game_engine_service_proto_engine_proto_rawDesc), len(file_services_game_engine_service_proto_engine_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_services_game_engine_service_engine_proto_goTypes,
-		DependencyIndexes: file_services_game_engine_service_engine_proto_depIdxs,
-		MessageInfos:      file_services_game_engine_service_engine_proto_msgTypes,
+		GoTypes:           file_services_game_engine_service_proto_engine_proto_goTypes,
+		DependencyIndexes: file_services_game_engine_service_proto_engine_proto_depIdxs,
+		MessageInfos:      file_services_game_engine_service_proto_engine_proto_msgTypes,
 	}.Build()
-	File_services_game_engine_service_engine_proto = out.File
-	file_services_game_engine_service_engine_proto_goTypes = nil
-	file_services_game_engine_service_engine_proto_depIdxs = nil
+	File_services_game_engine_service_proto_engine_proto = out.File
+	file_services_game_engine_service_proto_engine_proto_goTypes = nil
+	file_services_game_engine_service_proto_engine_proto_depIdxs = nil
 }

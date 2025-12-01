@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             v3.21.12
-// source: services/game-engine-service/engine.proto
+// source: services/game-engine-service/proto/engine.proto
 
-package main
+package engine
 
 import (
 	context "context"
@@ -117,5 +117,5 @@ var GameEngine_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "services/game-engine-service/engine.proto",
+	Metadata: "services/game-engine-service/proto/engine.proto",
 }

@@ -14,5 +14,3 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251022142026-3a174f9686a8 // indirect
 )
 
-replace github.com/ShadyDevelopment/ECHOBETZ/services/rng-service => ./services/rng-service
-replace github.com/ShadyDevelopment/ECHOBETZ/services/game-engine-service => ./services/game-engine-service

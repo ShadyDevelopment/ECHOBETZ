@@ -4,99 +4,62 @@ import (
 	"context"
 	"log"
 	"net"
-	"os"
 	"time"
-
-	// You must have the RNG Protobuf files copied into this directory
-	// (or imported with a path) for the RNG types (RNGRequest, RNGResponse, RNGServiceClient)
-	// to be available in this 'main' package scope.
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
+
+	// Import local engine proto
+	pb_engine "github.com/ShadyDevelopment/ECHOBETZ/services/game-engine-service/proto"
+	// Import remote RNG proto (Works now because it's a library package!)
+	pb_rng "github.com/ShadyDevelopment/ECHOBETZ/services/rng-service/proto"
 )
 
-// The gRPC client connection to the RNG Service (unprefixed)
-var rngServiceClient RngServiceClient
-
-// engineServer implements the GameEngineServer interface defined in engine_grpc.pb.go.
 type engineServer struct {
-	// FIX 1: Corrected casing of the embedded struct to match engine_grpc.pb.go
-	UnimplementedGameEngineServer 
+	pb_engine.UnimplementedGameEngineServer
+	rngClient pb_rng.RNGServiceClient
 }
 
-// Spin handles a request to spin a reel and returns the result using the RNG service.
-func (s *engineServer) Spin(ctx context.Context, req *SpinRequest) (*SpinResponse, error) {
-	log.Printf("Received Spin request from User: %s for Game: %s", req.GetUserId(), req.GetGameId())
-
-	// 1. Request random numbers from the RNG Service
-	rngRequest := &RNGRequest{Count: 3} 
-	
-	rngResponse, err := rngServiceClient.GetRandomInts(ctx, rngRequest)
+func (s *engineServer) Spin(ctx context.Context, req *pb_engine.SpinRequest) (*pb_engine.SpinResponse, error) {
+	// Call RNG Service
+	rngResp, err := s.rngClient.GetNumbers(ctx, &pb_rng.RNGRequest{Count: 5})
 	if err != nil {
-		log.Printf("Could not connect to RNG service: %v", err)
-		// Use a temporary fix for error formatting, as grpc.Errorf is deprecated
-		return nil, grpc.ErrClientConnClosing
+		log.Printf("Error calling RNG: %v", err)
+		return nil, err
 	}
 
-	// 2. Simple logic to map random numbers to reel positions (0-9)
-	// FIX 2: The field name in the RNGResponse struct is capitalized 'Ints'.
-	results := make([]int32, len(rngResponse.Ints))
-	for i, r := range rngResponse.Ints {
-		results[i] = int32(r % 10)
-	}
-	
-	// 3. Determine win
-	win := false
-	if len(results) >= 3 && results[0] == results[1] && results[1] == results[2] {
-		win = true
-	}
+	// Logic: Use the random numbers
+	// FIX: Use 'Numbers' field (Capitalized)
+	log.Printf("Got RNG numbers: %v", rngResp.Numbers)
 
-	return &SpinResponse{
-		ReelResults: results,
-		Win:         win,
-		Payout:      100,
+	// Dummy response
+	return &pb_engine.SpinResponse{
+		Matrix: []string{"A", "B", "C"},
+		TotalWin: 100,
 	}, nil
 }
 
 func main() {
-	// --- 1. Set up RNG Service Client (Connect to Dependency) ---
-	rngServiceAddr := os.Getenv("RNG_SERVICE_ADDR")
-	if rngServiceAddr == "" {
-		rngServiceAddr = "rng-service:50051" 
-	}
-
-	conn, err := grpc.DialContext(context.Background(), rngServiceAddr, 
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(), 
-		grpc.WithTimeout(5*time.Second))
+	// Connect to RNG Service
+	conn, err := grpc.Dial("rng-service:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("did not connect to RNG Service at %s: %v", rngServiceAddr, err)
+		log.Fatalf("did not connect to RNG: %v", err)
 	}
 	defer conn.Close()
+	rngClient := pb_rng.NewRNGServiceClient(conn)
 
-	// FIX 3: Corrected casing of the client constructor
-	rngServiceClient = NewRngServiceClient(conn) 
-	log.Printf("Successfully connected to RNG Service at %s", rngServiceAddr)
-
-	// --- 2. Start Game Engine Server ---
-	port := os.Getenv("GAME_ENGINE_PORT")
-	if port == "" {
-		port = "50052" 
-	}
-
-	lis, err := net.Listen("tcp", ":"+port)
+	// Start Engine Server
+	lis, err := net.Listen("tcp", ":50052")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	s := grpc.NewServer()
-	// FIX 4: Corrected casing of the registration function
-	RegisterGameEngineServer(s, &engineServer{})
-
+	pb_engine.RegisterGameEngineServer(s, &engineServer{rngClient: rngClient})
 	reflection.Register(s)
 
-	log.Printf("Game Engine Service listening on %v", lis.Addr())
+	log.Printf("Game Engine listening on :50052")
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

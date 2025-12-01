@@ -1,0 +1,20 @@
+syntax = "proto3";
+package rng;
+// Go package path ends in 'rng' (not main)
+option go_package = "github.com/ShadyDevelopment/ECHOBETZ/services/rng-service/proto;rng";
+
+service RNGService {
+    rpc GetNumbers (RNGRequest) returns (RNGResponse) {}
+}
+
+message RNGRequest {
+    int32 count = 1;
+    int32 min = 2;
+    int32 max = 3;
+}
+
+message RNGResponse {
+    // Note: 'numbers' (lowercase) in proto becomes 'Numbers' (Uppercase) in Go
+    repeated int32 numbers = 1;
+    int64 seed = 2;
+}

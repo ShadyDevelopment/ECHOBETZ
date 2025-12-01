@@ -1,0 +1,20 @@
+syntax = "proto3";
+package engine;
+// Go package path ends in 'engine' (not main)
+option go_package = "github.com/ShadyDevelopment/ECHOBETZ/services/game-engine-service/proto;engine";
+
+service GameEngine {
+  rpc Spin (SpinRequest) returns (SpinResponse);
+}
+
+message SpinRequest {
+  string game_code = 1;
+  int64 bet_amount = 2;
+}
+
+message SpinResponse {
+  repeated string matrix = 1;
+  int64 total_win = 2;
+  repeated string win_details = 3;
+  string rng_seed = 4;
+}
