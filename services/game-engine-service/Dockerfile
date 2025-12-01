@@ -1,7 +1,7 @@
 FROM golang:alpine AS builder
 WORKDIR /app
 
-# 1. CRITICAL FIX: Install git
+# 1. Install git
 RUN apk update && apk add --no-cache git
 
 # 2. Copy root module definition
@@ -23,6 +23,6 @@ RUN go mod tidy
 RUN CGO_ENABLED=0 go build -o /usr/local/bin/game-engine-service ./services/game-engine-service/
 
 FROM alpine:latest
-COPY --from=builder /usr/local/bin/game-engine-service /usr/local/bin/
+# ... rest of DockerfileCOPY --from=builder /usr/local/bin/game-engine-service /usr/local/bin/
 EXPOSE 50052
 ENTRYPOINT ["/usr/local/bin/game-engine-service"]

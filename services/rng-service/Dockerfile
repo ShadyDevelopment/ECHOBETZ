@@ -1,7 +1,7 @@
 FROM golang:alpine AS builder
 WORKDIR /app
 
-# 1. CRITICAL FIX: Install git to allow 'go mod tidy' to validate local replacements
+# 1. Install git
 RUN apk update && apk add --no-cache git
 
 # 2. Copy root module definition
@@ -11,10 +11,12 @@ RUN go mod download
 # 3. Copy the entire services directory structure.
 COPY services/ ./services/
 
-# 4. Add explicit local replace directive
+# 4. FIX: Add explicit local replace directives for ALL internal packages the service uses.
+# RNG Service needs its own proto and likely the Game Engine's proto as well.
 RUN go mod edit -replace=github.com/ShadyDevelopment/ECHOBETZ/services/rng-service/proto=./services/rng-service/proto
+RUN go mod edit -replace=github.com/ShadyDevelopment/ECHOBETZ/services/game-engine-service/proto=./services/game-engine-service/proto
 
-# 5. Run tidy to force Go to process the new replace directive
+# 5. Run tidy to process replacements
 RUN go mod tidy
 
 # 6. Build the RNG service
