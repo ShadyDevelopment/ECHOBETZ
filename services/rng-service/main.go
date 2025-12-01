@@ -12,30 +12,28 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-// rngServer implements the RNGServiceServer interface defined in rng_grpc.pb.go.
+// rngServer implements the RngServiceServer interface.
 type rngServer struct {
-	// Must be embedded to satisfy the interface.
-	UnimplementedRNGServiceServer
+	// FIX 1: Corrected casing of the embedded struct to match rng_grpc.pb.go
+	UnimplementedRngServiceServer 
 }
 
 // GetRandomInts generates a list of random 64-bit integers.
 func (s *rngServer) GetRandomInts(ctx context.Context, req *RNGRequest) (*RNGResponse, error) {
-	// Initialize a new pseudo-random source based on the current time
-	// Note: We are using the newer math/rand/v2 which is imported implicitly 
-	// or the older rand.NewSource if running Go < 1.20
+	// Note: rand.NewSource is deprecated in newer Go versions, but this keeps compatibility.
 	source := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	count := int(req.GetCount())
 	if count <= 0 || count > 1000 {
-		count = 1 // Default to 1 if count is invalid
+		count = 1 
 	}
 
 	ints := make([]int64, count)
 	for i := 0; i < count; i++ {
-		// Generate a random int64
 		ints[i] = source.Int63()
 	}
 
+	// FIX 2: The field name in the RNGResponse struct is capitalized 'Ints'.
 	return &RNGResponse{Ints: ints}, nil
 }
 
@@ -51,10 +49,9 @@ func main() {
 	}
 
 	s := grpc.NewServer()
-	// Register the service using the now-unprefixed Register function
-	RegisterRNGServiceServer(s, &rngServer{})
+	// FIX 3: Corrected casing of the registration function to match rng_grpc.pb.go
+	RegisterRngServiceServer(s, &rngServer{})
 
-	// Register reflection service on gRPC server for testing tools
 	reflection.Register(s)
 
 	log.Printf("RNG Service listening on %v", lis.Addr())
