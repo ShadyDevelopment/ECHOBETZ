@@ -3,9 +3,9 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy both services to access the Proto definitions
-COPY services/game-engine-service/ ./services/game-engine-service/
-COPY services/rng-service/ ./services/rng-service/
+# FIX: Copy ALL services to ensure cross-service imports (like RNG proto) work.
+COPY services/ ./services/
+COPY config/ ./config/
 
 RUN CGO_ENABLED=0 go build -o /usr/local/bin/game-engine-service ./services/game-engine-service/
 

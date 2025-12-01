@@ -1,12 +1,17 @@
 FROM golang:alpine AS builder
 WORKDIR /app
+
+# 1. Copy root module definition (go.mod, go.sum)
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the entire service directory, including the 'proto' folder
-COPY services/rng-service/ ./services/rng-service/
+# 2. Copy the ENTIRE 'services' directory structure.
+# This ensures that relative packages (like /services/rng-service/proto) 
+# are available locally within the module.
+COPY services/ ./services/
 
-# Build from the directory containing main.go
+# 3. Build the RNG service
+# The 'go build' command should now correctly find the local proto package.
 RUN CGO_ENABLED=0 go build -o /usr/local/bin/rng-service ./services/rng-service/
 
 FROM alpine:latest
