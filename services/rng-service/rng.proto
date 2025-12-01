@@ -1,20 +1,21 @@
 syntax = "proto3";
 
-package rng;
+package rng; 
 
-// ?? THIS LINE FIXES YOUR ERROR
+// FIX: Change the Go package suffix to 'main'
 option go_package = "github.com/ShadyDevelopment/ECHOBETZ/services/rng-service;main";
 
-
-service RNG {
-  rpc GetRandomNumbers (RNGRequest) returns (RNGResponse);
+service RNGService {
+    rpc GetNumbers (RNGRequest) returns (RNGResponse) {}
 }
 
 message RNGRequest {
-  int32 count = 1; // Number of random integers requested
+    int32 count = 1;
+    int32 min = 2;
+    int32 max = 3;
 }
 
 message RNGResponse {
-  repeated int64 numbers = 1; // The sequence of random numbers (stop indices)
-  string seed = 2; // The current seed used for audibility
+    repeated int32 numbers = 1;
+    int64 seed = 2; // Return the seed used for auditing
 }

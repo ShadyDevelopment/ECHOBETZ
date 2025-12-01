@@ -15,5 +15,4 @@ require (
 )
 
 replace github.com/ShadyDevelopment/ECHOBETZ/services/rng-service => ./services/rng-service
-
 replace github.com/ShadyDevelopment/ECHOBETZ/services/game-engine-service => ./services/game-engine-service
