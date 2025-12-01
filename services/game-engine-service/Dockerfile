@@ -23,6 +23,6 @@ RUN go mod tidy
 RUN CGO_ENABLED=0 go build -o /usr/local/bin/game-engine-service ./services/game-engine-service/
 
 FROM alpine:latest
-# ... rest of DockerfileCOPY --from=builder /usr/local/bin/game-engine-service /usr/local/bin/
+COPY --from=builder /usr/local/bin/game-engine-service /usr/local/bin/
 EXPOSE 50052
 ENTRYPOINT ["/usr/local/bin/game-engine-service"]

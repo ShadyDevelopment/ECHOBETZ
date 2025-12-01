@@ -88,4 +88,13 @@ export async function creditExternalWallet(
     try {
         const response = await axios.post(`${walletUrl}/credit`, payload, {
             headers: {
-                'X-Echobetz-
+                'X-Echobetz-Signature': signature,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        return response.data as WalletResponse;
+    } catch (error: any) {
+        console.error('External Credit Failed:', error.response?.data || error.message);
+        throw new Error(`Credit failed. Casino Error: ${error.response?.statusText || error.message}`);
+    }

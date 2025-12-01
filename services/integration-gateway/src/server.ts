@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as WebSocket from 'ws';
 import { createServer } from 'http';
 import { URLSearchParams } from 'url';
+import * as crypto from 'crypto';
 import { verifySessionToken, generateSessionToken, getPartnerSecret, getPartnerWalletUrl } from './auth';
 import { debitExternalWallet, creditExternalWallet } from './wallet_client'; // Assumed Wallet Client
 
